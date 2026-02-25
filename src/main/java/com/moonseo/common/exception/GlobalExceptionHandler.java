@@ -36,15 +36,16 @@ public class GlobalExceptionHandler {
 
         List<FieldError> fieldErrors = ex.getBindingResult().getFieldErrors();
 
-        for (FieldError fe : fieldErrors) {
-            ArrayList<FieldErrorDetail> errors = new ArrayList<>();
+        List<FieldErrorDetail> errors = new ArrayList<>();
 
+        for (FieldError fe : fieldErrors) {
             errors.add(new FieldErrorDetail(
                     fe.getField(),
                     fe.getRejectedValue(),
                     fe.getDefaultMessage()));
-            details.put("errors", errors);
         }
+        details.put("errors", errors);
+
         return ResponseEntity
                 .status(ec.getHttpStatus())
                 .body(new ErrorResponse(ec.getCode(), ec.getDefaultMessage(), details));

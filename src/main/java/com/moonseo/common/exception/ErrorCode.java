@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
+import java.util.Map;
+
 @Getter
 @RequiredArgsConstructor
 public enum ErrorCode {
@@ -16,6 +18,16 @@ public enum ErrorCode {
     PAYMENT_ERROR(HttpStatus.BAD_GATEWAY, "PAYMENT_ERROR", "결제 연동 오류입니다."),
     IDEMPOTENCY_CONFLICT(HttpStatus.CONFLICT, "IDEMPOTENCY_CONFLICT", "멱등성 충돌입니다."),
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_ERROR", "서버 오류입니다.");
+
+    public ApiException exception() {
+        return new ApiException(this);
+    }
+    public ApiException exception(String message) {
+        return new ApiException(this, message);
+    }
+    public ApiException exception(String message, Map<String, Object> extraDetails) {
+        return new ApiException(this, message, extraDetails);
+    }
 
     private final HttpStatus httpStatus;
     private final String code;
