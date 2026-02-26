@@ -33,5 +33,7 @@ spring:
 
 logging:
   level:
+    root: INFO
+    org.springframework.security: TRACE
     org.flywaydb.core: INFO
     org.hibernate.SQL: INFO
