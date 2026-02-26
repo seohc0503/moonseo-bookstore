@@ -1,0 +1,4 @@
+moonseo:
+  jwt:
+    secret: "moonseo-jwt-secret-key-for-local-testing-only"
+    access-minutes: 60
