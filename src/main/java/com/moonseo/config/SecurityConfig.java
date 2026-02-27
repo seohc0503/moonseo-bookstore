@@ -25,13 +25,13 @@ public class SecurityConfig {
                 .httpBasic(Customizer.withDefaults())
 
                 .exceptionHandling(eh -> eh
-                        .authenticationEntryPoint(new JwtAuthenticationEntryPoint(om))
                         .accessDeniedHandler(new JwtAccessDeniedHandler(om))
+                        .authenticationEntryPoint(new JwtAuthenticationEntryPoint(om))
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("api/health", "/api/ping").permitAll()
                         .requestMatchers("/api/dev/**").permitAll()
-                        .requestMatchers("/ap.i/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 );
         return http.build();

@@ -12,9 +12,9 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
+// 401
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     private final ObjectMapper om;
@@ -33,7 +33,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
         Map<String, Object> details = ErrorDetails.baseDetails(request);
         details.put("reason", "Authorization 헤더가 없거나 토큰이 유효하지 않습니다.");
-        ErrorResponse body = new ErrorResponse(ec.getCode(), ec.getDefaultMessage(), details);
+                ErrorResponse body = new ErrorResponse(ec.getCode(), ec.getDefaultMessage(), details);
         om.writeValue(response.getWriter(), body);
     }
 }
