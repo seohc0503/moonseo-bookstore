@@ -25,7 +25,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/health/ping").permitAll()
                         .requestMatchers("/api/dev/**").permitAll()
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/ap.i/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 );
         return http.build();
