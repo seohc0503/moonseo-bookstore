@@ -8,10 +8,9 @@ import java.time.Instant;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/health")
 public class HealthController {
 
-    @GetMapping("/ping")
+    @GetMapping("/api/health")
     public Map<String, Object> ping() {
         return Map.of("status", "OK", "timestamp", Instant.now().toString());
     }

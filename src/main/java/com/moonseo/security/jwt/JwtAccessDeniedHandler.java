@@ -14,6 +14,7 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import java.io.IOException;
 import java.util.Map;
 
+// 403
 public class JwtAccessDeniedHandler implements AccessDeniedHandler {
 
     private final ObjectMapper om;

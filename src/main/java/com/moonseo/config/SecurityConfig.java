@@ -1,6 +1,8 @@
 package com.moonseo.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.moonseo.security.jwt.JwtAccessDeniedHandler;
+import com.moonseo.security.jwt.JwtAuthenticationEntryPoint;
 import com.moonseo.security.jwt.JwtAuthenticationFilter;
 import com.moonseo.security.jwt.JwtProvider;
 import org.springframework.context.annotation.Bean;
@@ -14,7 +16,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 public class SecurityConfig {
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, JwtProvider jwtProvider) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, JwtProvider jwtProvider, ObjectMapper om) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -22,8 +24,12 @@ public class SecurityConfig {
                 .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
                 .httpBasic(Customizer.withDefaults())
 
+                .exceptionHandling(eh -> eh
+                        .authenticationEntryPoint(new JwtAuthenticationEntryPoint(om))
+                        .accessDeniedHandler(new JwtAccessDeniedHandler(om))
+                )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/health/ping").permitAll()
+                        .requestMatchers("api/health", "/api/ping").permitAll()
                         .requestMatchers("/api/dev/**").permitAll()
                         .requestMatchers("/ap.i/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
