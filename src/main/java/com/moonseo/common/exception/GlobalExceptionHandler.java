@@ -9,8 +9,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
-import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -19,7 +20,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleApiException(ApiException ex, HttpServletRequest request) {
         ErrorCode ec = ex.getErrorCode();
 
-        Map<String, Object> details = baseDetails(request);
+        Map<String, Object> details = ErrorDetails.baseDetails(request);
         details.putAll(ex.getExtraDetails());
 
         return ResponseEntity
@@ -32,7 +33,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleMethodArgNotValid(MethodArgumentNotValidException ex, HttpServletRequest request) {
         ErrorCode ec = ErrorCode.VALIDATION_ERROR;
 
-        Map<String, Object> details = baseDetails(request);
+        Map<String, Object> details = ErrorDetails.baseDetails(request);
 
         List<FieldError> fieldErrors = ex.getBindingResult().getFieldErrors();
 
@@ -56,7 +57,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleNoHandler(NoHandlerFoundException ex, HttpServletRequest request) {
         ErrorCode ec = ErrorCode.NOT_FOUND;
 
-        Map<String, Object> details = baseDetails(request);
+        Map<String, Object> details = ErrorDetails.baseDetails(request);
         details.put("reason", "NO_HANDLER");
 
         return ResponseEntity
@@ -69,7 +70,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleMethodNotSupported(HttpRequestMethodNotSupportedException ex, HttpServletRequest request) {
         ErrorCode ec = ErrorCode.VALIDATION_ERROR;
 
-        Map<String, Object> details = baseDetails(request);
+        Map<String, Object> details = ErrorDetails.baseDetails(request);
         details.put("supportedMethods", ex.getSupportedMethods());
 
         return ResponseEntity
@@ -82,21 +83,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleUnexpected(Exception ex, HttpServletRequest request) {
         ErrorCode ec = ErrorCode.INTERNAL_ERROR;
 
-        Map<String, Object> details = baseDetails(request);
+        Map<String, Object> details = ErrorDetails.baseDetails(request);
         details.put("reason", "UNEXPECTED");
 
         return ResponseEntity
                 .status(ec.getHttpStatus())
                 .body(new ErrorResponse(ec.getCode(), ec.getDefaultMessage(), details));
-    }
-
-    // details 기본값 설정
-    private Map<String, Object> baseDetails(HttpServletRequest request) {
-        Map<String, Object> details = new LinkedHashMap<>();
-        details.put("requestId", UUID.randomUUID());
-        details.put("path", request.getRequestURI());
-        details.put("method", request.getMethod());
-        details.put("timestamp", Instant.now().toString());
-        return details;
     }
 }
