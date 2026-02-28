@@ -1,5 +1,6 @@
 package com.moonseo.security.jwt;
 
+import com.moonseo.security.AuthUser;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/_dev/errors")
+@RequestMapping("/api/dev/errors")
 public class ErrorDemoController {
 
     // 400 VALIDATION_ERROR 재현
@@ -21,16 +21,12 @@ public class ErrorDemoController {
     // 404 NOT_FOUND 재현
     @GetMapping("/not-found/{id}")
     public Map<String, Object> notFound(@PathVariable Long id) {
-        throw ErrorCode.NOT_FOUND.exception(
-                "대상을 찾을 수 없습니다.",
-                Map.of("resource", "Demo", "id", id));
+        throw new ApiException(ErrorCode.NOT_FOUND, Map.of("resource", "Demo", "id", id));
     }
 
     // 409 STATE_INVALID 재현
     @PostMapping("/state-invalid")
     public Map<String, Object> stateInvalid(@RequestParam(defaultValue = "PAID") String current) {
-        throw ErrorCode.STATE_INVALID.exception(
-                "상태 전이가 불가능합니다.",
-                Map.of("current", current, "expected", "PLACED"));
+        throw new ApiException(ErrorCode.STATE_INVALID, Map.of("current", current, "expected", "PLACED"));
     }
 }
