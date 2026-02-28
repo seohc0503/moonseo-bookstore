@@ -29,7 +29,7 @@ public class SecurityConfig {
                         .authenticationEntryPoint(new JwtAuthenticationEntryPoint(om))
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("api/health", "/api/ping").permitAll()
+                        .requestMatchers("/api/health", "/api/ping").permitAll()
                         .requestMatchers("/api/dev/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()

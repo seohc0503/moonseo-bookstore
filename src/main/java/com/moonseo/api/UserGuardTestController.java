@@ -15,12 +15,10 @@ public class UserGuardTestController {
 
     @GetMapping("/api/users/{userId}/profile")
     public Map<String, Object> getProfile(@PathVariable Long userId, Authentication authentication) {
-
         AuthUser authUser = (AuthUser) authentication.getPrincipal();
 
-        if (!authUser.getUserId().equals(userId)) {
-            ErrorCode ec = ErrorCode.FORBIDDEN;
-            throw new ApiException(ec, ec.getDefaultMessage());
+        if (!authUser.userId().equals(userId)) {
+            throw new ApiException(ErrorCode.FORBIDDEN);
         }
         return Map.of("userId", userId, "ok", true);
     }
