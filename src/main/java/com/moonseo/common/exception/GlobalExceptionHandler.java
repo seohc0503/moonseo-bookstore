@@ -1,6 +1,7 @@
 package com.moonseo.common.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -18,14 +19,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<ErrorResponse> handleApiException(ApiException ex, HttpServletRequest request) {
-        ErrorCode ec = ex.getErrorCode();
 
         Map<String, Object> details = ErrorDetails.baseDetails(request);
         details.putAll(ex.getExtraDetails());
 
         return ResponseEntity
-                .status(ec.getHttpStatus())
-                .body(new ErrorResponse(ec.getCode(), ex.getMessage(), details));
+                .status(ex.getErrorCode().getHttpStatus())
+                .body(new ErrorResponse(ex.getErrorCode(), details));
     }
 
     // @Vaild 검증 실패 처리 (400)
@@ -34,22 +34,17 @@ public class GlobalExceptionHandler {
         ErrorCode ec = ErrorCode.VALIDATION_ERROR;
 
         Map<String, Object> details = ErrorDetails.baseDetails(request);
-
         List<FieldError> fieldErrors = ex.getBindingResult().getFieldErrors();
-
         List<FieldErrorDetail> errors = new ArrayList<>();
 
         for (FieldError fe : fieldErrors) {
-            errors.add(new FieldErrorDetail(
-                    fe.getField(),
-                    fe.getRejectedValue(),
-                    fe.getDefaultMessage()));
+            errors.add(new FieldErrorDetail(fe));
         }
         details.put("errors", errors);
 
         return ResponseEntity
                 .status(ec.getHttpStatus())
-                .body(new ErrorResponse(ec.getCode(), ec.getDefaultMessage(), details));
+                .body(new ErrorResponse(ec, details));
     }
 
     // 존재하지 않는 URL (404)
@@ -62,7 +57,7 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(ec.getHttpStatus())
-                .body(new ErrorResponse(ec.getCode(), ec.getDefaultMessage(), details));
+                .body(new ErrorResponse(ec, details));
     }
 
     // 메서드 오류(GET/POST 등)
@@ -75,7 +70,7 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(ec.getHttpStatus())
-                .body(new ErrorResponse(ec.getCode(), ec.getDefaultMessage(), details));
+                .body(new ErrorResponse(ec, details));
     }
 
     // 예상 못한 예외
@@ -88,6 +83,6 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(ec.getHttpStatus())
-                .body(new ErrorResponse(ec.getCode(), ec.getDefaultMessage(), details));
+                .body(new ErrorResponse(ec, details));
     }
 }

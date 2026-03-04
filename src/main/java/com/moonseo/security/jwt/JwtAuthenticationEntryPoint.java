@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moonseo.common.exception.ErrorCode;
 import com.moonseo.common.exception.ErrorDetails;
 import com.moonseo.common.exception.ErrorResponse;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
@@ -24,7 +23,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     }
 
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
+    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
         ErrorCode ec = ErrorCode.AUTH_REQUIRED;
 
         response.setStatus(ec.getHttpStatus().value());
@@ -33,7 +32,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
         Map<String, Object> details = ErrorDetails.baseDetails(request);
         details.put("reason", "Authorization 헤더가 없거나 토큰이 유효하지 않습니다.");
-                ErrorResponse body = new ErrorResponse(ec.getCode(), ec.getDefaultMessage(), details);
-        om.writeValue(response.getWriter(), body);
+
+        om.writeValue(response.getWriter(), new ErrorResponse(ec, details));
     }
 }

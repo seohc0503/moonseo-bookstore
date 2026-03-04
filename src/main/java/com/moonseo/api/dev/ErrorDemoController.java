@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/_dev/errors")
+@RequestMapping("/api/dev/errors")
 public class ErrorDemoController {
 
     // 400 VALIDATION_ERROR 재현
