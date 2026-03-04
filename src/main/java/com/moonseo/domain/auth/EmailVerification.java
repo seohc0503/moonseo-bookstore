@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
+import static jakarta.persistence.GenerationType.*;
 import static lombok.AccessLevel.PROTECTED;
 
 @Entity
@@ -18,7 +19,7 @@ import static lombok.AccessLevel.PROTECTED;
 public class EmailVerification {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
     @Column(nullable = false, length = 255)

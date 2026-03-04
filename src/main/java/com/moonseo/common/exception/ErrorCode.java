@@ -19,16 +19,6 @@ public enum ErrorCode {
     IDEMPOTENCY_CONFLICT(HttpStatus.CONFLICT, "IDEMPOTENCY_CONFLICT", "멱등성 충돌입니다."),
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_ERROR", "서버 오류입니다.");
 
-    public ApiException exception() {
-        return new ApiException(this);
-    }
-    public ApiException exception(String message) {
-        return new ApiException(this, message);
-    }
-    public ApiException exception(String message, Map<String, Object> extraDetails) {
-        return new ApiException(this, message, extraDetails);
-    }
-
     private final HttpStatus httpStatus;
     private final String code;
     private final String defaultMessage;

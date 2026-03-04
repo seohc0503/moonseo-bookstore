@@ -23,6 +23,12 @@ public class ApiException extends RuntimeException{
         this.extraDetails = Collections.emptyMap();
     }
 
+    public ApiException(ErrorCode errorCode, Map<String, Object> extraDetails) {
+        super(errorCode.getDefaultMessage());
+        this.errorCode = errorCode;
+        this.extraDetails = extraDetails;
+    }
+
     public ApiException(ErrorCode errorCode, String message, Map<String, Object> extraDetails) {
         super(message);
         this.errorCode = errorCode;

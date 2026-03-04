@@ -37,3 +37,7 @@ logging:
     org.springframework.security: TRACE
     org.flywaydb.core: INFO
     org.hibernate.SQL: INFO
+
+moonseo:
+  email-verification:
+    log-code: false
