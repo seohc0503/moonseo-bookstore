@@ -31,7 +31,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/health", "/api/ping").permitAll()
                         .requestMatchers("/api/dev/**").permitAll()
+
+                        .requestMatchers("/auth/email-verifications/**").permitAll()
+
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
+
                         .anyRequest().authenticated()
                 );
         return http.build();
