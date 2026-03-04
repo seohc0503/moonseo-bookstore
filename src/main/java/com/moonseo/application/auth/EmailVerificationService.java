@@ -128,7 +128,7 @@ public class EmailVerificationService {
 
         // 이미 인증 완료
         if (ev.isUsed()) {
-            // 같은 코드
+            // 같은 코드 -> 200 멱등
             if (ev.getCode().equals(code)) {
                 return new EmailVerificationConfirmResponse(
                         email,
@@ -137,7 +137,7 @@ public class EmailVerificationService {
                         ev.getUsedAt()
                 );
             }
-            // used인데 다른 코드 -> 정책상 409
+            // 다른 코드 -> 정책상 409
             throw new ApiException(
                     ErrorCode.STATE_INVALID,
                     Map.of("reason", "이미 인증이 완료된 내역입니다.", "email", email)
