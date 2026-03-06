@@ -38,6 +38,13 @@ logging:
     org.flywaydb.core: INFO
     org.hibernate.SQL: INFO
 
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    persistAuthorization: true
+
 moonseo:
   email-verification:
     log-code: false
