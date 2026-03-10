@@ -46,5 +46,8 @@ springdoc:
     persistAuthorization: true
 
 moonseo:
-  email-verification:
-    log-code: false
+  jwt:
+    access-secret: ${MOONSEO_JWT_ACCESS_SECRET}
+    refresh-secret: ${MOONSEO_JWT_REFRESH_SECRET}
+    access-minutes: ${MOONSEO_JWT_ACCESS_MINUTES:60}
+    refresh-minutes: ${MOONSEO_JWT_ACCESS_MINUTES:10080}

@@ -1,7 +1,6 @@
 moonseo:
   jwt:
-    secret: "moonseo-jwt-secret-key-for-local-testing-only"
+    access-secret: "moonseo-access-secret-key-for-local-testing-only-1234567890"
+    refresh-secret: "moonseo-refresh-secret-key-for-local-testing-only-1234567890"
     access-minutes: 60
-
-  email-verification:
-    log-code: true
+    refresh-minutes: 10080

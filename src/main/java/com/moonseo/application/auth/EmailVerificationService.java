@@ -6,6 +6,7 @@ import com.moonseo.domain.auth.EmailVerification;
 import com.moonseo.domain.auth.EmailVerificationRepository;
 import com.moonseo.dto.auth.EmailVerificationConfirmResponse;
 import com.moonseo.dto.auth.EmailVerificationSendResponse;
+import com.moonseo.infra.email.EmailSender;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,17 +24,13 @@ import java.util.Map;
 public class EmailVerificationService {
 
     private final EmailVerificationRepository repo;
+    private final EmailSender emailSender;
 
     private static final int EXPIRE_MINUTES = 10;
     private static final SecureRandom random = new SecureRandom();
 
-    @Value("${moonseo.email-verification.log-code:false}")
-    private boolean logCode;
-
     @Transactional
     public EmailVerificationSendResponse send(String email) {
-
-        // null 가능
         EmailVerification ev = repo.findByEmail(email).orElse(null);
         LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
 
@@ -45,11 +42,7 @@ public class EmailVerificationService {
             ev = EmailVerification.issue(email, code, expiresAt);
             repo.save(ev);
 
-            if (logCode) {
-                log.info("[EmailVerification] send to={} code={} expiresAt={}", email, code, expiresAt);
-            } else {
-                log.info("[EmailVerification] send to={} expiresAt={}", email, expiresAt);
-            }
+            emailSender.send(email, code, expiresAt);
 
             return new EmailVerificationSendResponse(
                     email,
@@ -75,16 +68,12 @@ public class EmailVerificationService {
 
         // (3) 만료 후 재발송: 새 코드 발급
         if (ev.isExpired(now)) {
-
             LocalDateTime newExpiresAt = now.plusMinutes(EXPIRE_MINUTES);
             String newCode = generateCode();
+
             ev.renew(newCode, newExpiresAt, now);
 
-            if (logCode) {
-                log.info("[EmailVerification] send to={} code={} expiresAt={}", email, newCode, newExpiresAt);
-            } else {
-                log.info("[EmailVerification] send to={} expiresAt={}", email, newExpiresAt);
-            }
+            emailSender.send(email, newCode, newExpiresAt);
 
             return new EmailVerificationSendResponse(
                     email,
@@ -99,12 +88,7 @@ public class EmailVerificationService {
         // code/expiresAt 그대로
         // updatedAt만 바꿔서 재발송 흔적 남김
         ev.resend(now);
-
-        if (logCode) {
-            log.info("[EmailVerification] send to={} code={} expiresAt={}", email, ev.getCode(), ev.getExpiresAt());
-        } else {
-            log.info("[EmailVerification] send to={} expiresAt={}", email, ev.getExpiresAt());
-        }
+        emailSender.send(email, ev.getCode(), ev.getExpiresAt());
 
         return new EmailVerificationSendResponse(
                 email,
@@ -118,7 +102,6 @@ public class EmailVerificationService {
 
     @Transactional
     public EmailVerificationConfirmResponse confirm(String email, String code) {
-
         EmailVerification ev = repo.findByEmail(email).orElseThrow(() -> new ApiException(
                 ErrorCode.STATE_INVALID,
                 Map.of("reason", "인증 요청 내역이 존재하지 않습니다.", "email", email)
@@ -164,7 +147,11 @@ public class EmailVerificationService {
 
         // 성공: used_at 기록 -> 재사용 불가
         ev.confirm(now);
-        return new EmailVerificationConfirmResponse(email, true, false, now);
+        return new EmailVerificationConfirmResponse(
+                email,
+                true,
+                false,
+                now);
     }
 
     /**
